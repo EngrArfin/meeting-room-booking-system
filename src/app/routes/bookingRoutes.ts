@@ -1,8 +1,8 @@
 import express from "express";
-import Booking from "../models/Booking";
-import Slot from "../models/Slot";
-import Room from "../models/Room";
-import { auth, admin } from "../middleware/authMiddleware";
+import { admin, auth } from "../middleware/authMiddleware";
+import roomModel from "../model/roomModel";
+import slotModel from "../model/slotModel";
+import bookingModel from "../model/bookingModel";
 
 const router = express.Router();
 
@@ -10,7 +10,7 @@ router.post("/", auth, async (req, res) => {
   try {
     const { room, slots, date, user } = req.body;
 
-    const roomDetails = await Room.findById(room);
+    const roomDetails = await roomModel.findById(room);
     if (!roomDetails) {
       return res.status(404).json({
         success: false,
@@ -19,7 +19,7 @@ router.post("/", auth, async (req, res) => {
       });
     }
 
-    const selectedSlots = await Slot.find({
+    const selectedSlots = await slotModel.find({
       _id: { $in: slots },
       isBooked: false,
     });
@@ -33,7 +33,7 @@ router.post("/", auth, async (req, res) => {
 
     const totalAmount = selectedSlots.length * roomDetails.pricePerSlot;
 
-    const booking = new Booking({
+    const booking = new bookingModel({
       room,
       slots,
       user,
@@ -42,7 +42,7 @@ router.post("/", auth, async (req, res) => {
     });
 
     await booking.save();
-    await Slot.updateMany({ _id: { $in: slots } }, { isBooked: true });
+    await slotModel.updateMany({ _id: { $in: slots } }, { isBooked: true });
 
     res.status(200).json({
       success: true,
@@ -50,7 +50,7 @@ router.post("/", auth, async (req, res) => {
       message: "Booking created successfully",
       data: booking,
     });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({
       success: false,
       statusCode: 500,
@@ -61,7 +61,7 @@ router.post("/", auth, async (req, res) => {
 
 router.get("/", auth, admin, async (req, res) => {
   try {
-    const bookings = await Booking.find().populate("room user slots");
+    const bookings = await bookingModel.find().populate("room user slots");
 
     res.status(200).json({
       success: true,
@@ -69,7 +69,7 @@ router.get("/", auth, admin, async (req, res) => {
       message: "Bookings retrieved successfully",
       data: bookings,
     });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({
       success: false,
       statusCode: 500,

@@ -1,12 +1,12 @@
 import express from "express";
-import Room from "../models/Room";
-import { auth, admin } from "../middleware/authMiddleware";
+import { admin, auth } from "../middleware/authMiddleware";
+import roomModel from "../model/roomModel";
 
 const router = express.Router();
 
 router.post("/", auth, admin, async (req, res) => {
   try {
-    const room = new Room(req.body);
+    const room = new roomModel(req.body);
     await room.save();
 
     res.status(200).json({
@@ -15,7 +15,7 @@ router.post("/", auth, admin, async (req, res) => {
       message: "Room added successfully",
       data: room,
     });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({
       success: false,
       statusCode: 500,
@@ -26,7 +26,7 @@ router.post("/", auth, admin, async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   try {
-    const room = await Room.findById(req.params.id);
+    const room = await roomModel.findById(req.params.id);
 
     if (!room) {
       return res.status(404).json({
@@ -42,7 +42,7 @@ router.get("/:id", async (req, res) => {
       message: "Room retrieved successfully",
       data: room,
     });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({
       success: false,
       statusCode: 500,
@@ -53,7 +53,7 @@ router.get("/:id", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const rooms = await Room.find({ isDeleted: false });
+    const rooms = await roomModel.find({ isDeleted: false });
 
     res.status(200).json({
       success: true,
@@ -61,7 +61,7 @@ router.get("/", async (req, res) => {
       message: "Rooms retrieved successfully",
       data: rooms,
     });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({
       success: false,
       statusCode: 500,
@@ -72,7 +72,7 @@ router.get("/", async (req, res) => {
 
 router.put("/:id", auth, admin, async (req, res) => {
   try {
-    const room = await Room.findByIdAndUpdate(req.params.id, req.body, {
+    const room = await roomModel.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
     });
 
@@ -90,7 +90,7 @@ router.put("/:id", auth, admin, async (req, res) => {
       message: "Room updated successfully",
       data: room,
     });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({
       success: false,
       statusCode: 500,
@@ -101,7 +101,7 @@ router.put("/:id", auth, admin, async (req, res) => {
 
 router.delete("/:id", auth, admin, async (req, res) => {
   try {
-    const room = await Room.findByIdAndUpdate(
+    const room = await roomModel.findByIdAndUpdate(
       req.params.id,
       { isDeleted: true },
       { new: true }
@@ -121,7 +121,7 @@ router.delete("/:id", auth, admin, async (req, res) => {
       message: "Room deleted successfully",
       data: room,
     });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({
       success: false,
       statusCode: 500,

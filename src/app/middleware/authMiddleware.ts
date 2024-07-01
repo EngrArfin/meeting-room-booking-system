@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import userModel from "../model/userModel";
 
 export const auth = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -14,7 +15,7 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
     }
 
     const decoded: any = jwt.verify(token, process.env.JWT_SECRET as string);
-    const user = await User.findById(decoded.id);
+    const user = await userModel.findById(decoded.id);
 
     if (!user) {
       return res.status(401).json({
