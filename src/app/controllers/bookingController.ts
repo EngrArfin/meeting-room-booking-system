@@ -2,12 +2,11 @@ import { Request, Response } from "express";
 import roomModel from "../model/roomModel";
 import slotModel from "../model/slotModel";
 import bookingModel from "../model/bookingModel";
-import { createSlot } from "./slotController";
 
 export const createBooking = async (req: Request, res: Response) => {
   try {
     const { roomId, slotIds, date } = req.body;
-    const userId = req.userId;
+    const userId = req.userID;
 
     const room = await roomModel.findById(roomId);
     if (!room) {
@@ -40,7 +39,7 @@ export const createBooking = async (req: Request, res: Response) => {
 
     await booking.save();
 
-    await createSlot.updateMany({ _id: { $in: slotIds } }, { isBooked: true });
+    await slotModel.updateMany({ _id: { $in: slotIds } }, { isBooked: true });
 
     res.status(200).json({
       success: true,
@@ -57,9 +56,9 @@ export const createBooking = async (req: Request, res: Response) => {
 
 export const getAllBookings = async (req: Request, res: Response) => {
   try {
-    const bookings = await Booking.find({ isDeleted: false }).populate(
-      "room slots user"
-    );
+    const bookings = await bookingModel
+      .find({ isDeleted: false })
+      .populate("room slots user");
     res.status(200).json({
       success: true,
       statusCode: 200,
