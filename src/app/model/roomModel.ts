@@ -9,6 +9,7 @@ export interface IRoomModel extends Document {
   amenities: string[];
   isDeleted: boolean;
 }
+
 const RoomModelSchema: Schema = new Schema({
   name: { type: String, required: true },
   roomNo: { type: Number, required: true, unique: true },

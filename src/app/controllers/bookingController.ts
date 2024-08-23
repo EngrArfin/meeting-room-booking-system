@@ -38,7 +38,6 @@ export const createBooking = async (req: Request, res: Response) => {
     });
 
     await booking.save();
-
     await slotModel.updateMany({ _id: { $in: slotIds } }, { isBooked: true });
 
     res.status(200).json({
