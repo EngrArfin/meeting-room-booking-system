@@ -1,18 +1,35 @@
-import express from "express";
-import mongoose from "mongoose";
-import authRoutes from "./routes/authRoutes";
+import express, { Application, Request, Response, NextFunction } from "express";
+
+import dotenv from "dotenv";
+import cors from "cors";
+/* import authRoutes from "./routes/authRoutes";
 import roomRoutes from "./routes/roomRoutes";
 import slotRoutes from "./routes/slotRoutes";
-import bookingRoutes from "./routes/bookingRoutes";
+import bookingRoutes from "./routes/bookingRoutes"; */
+import authRoutes from "./routes/authRoutes";
 
-const app = express();
+dotenv.config();
 
+const app: Application = express();
+
+// Middleware
 app.use(express.json());
+app.use(cors());
 
+// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/rooms", roomRoutes);
 app.use("/api/slots", slotRoutes);
 app.use("/api/bookings", bookingRoutes);
+
+// Error handling middleware
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  console.error(err.stack);
+  res.status(500).json({
+    success: false,
+    message: "Internal server error",
+  });
+});
 
 export default app;
 

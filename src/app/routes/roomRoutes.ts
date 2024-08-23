@@ -104,7 +104,7 @@ router.delete("/:id", auth, admin, async (req, res) => {
     const room = await roomModel.findByIdAndUpdate(
       req.params.id,
       { isDeleted: true },
-      { new: true }
+      { new: true },
     );
 
     if (!room) {

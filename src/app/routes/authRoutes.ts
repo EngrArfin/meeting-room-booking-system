@@ -28,7 +28,7 @@ router.post("/signup", async (req, res) => {
       message: "User registered successfully",
       data: user,
     });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({
       success: false,
       statusCode: 500,
@@ -40,7 +40,7 @@ router.post("/signup", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await loginUser.findOne({ email });
+    const user = await userModel.findOne({ email });
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).json({
@@ -53,7 +53,7 @@ router.post("/login", async (req, res) => {
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET as string,
-      { expiresIn: "1d" }
+      { expiresIn: "1d" },
     );
 
     res.status(200).json({
@@ -63,7 +63,7 @@ router.post("/login", async (req, res) => {
       token,
       data: user,
     });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({
       success: false,
       statusCode: 500,

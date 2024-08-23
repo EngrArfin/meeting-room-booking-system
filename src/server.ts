@@ -9,8 +9,7 @@ const MONGODB_URI =
   process.env.MONGODB_URI || "mongodb://localhost:27017/meeting-room-booking";
 
 mongoose
-  .connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-
+  .connect(MONGODB_URI)
   .then(() => {
     console.log("MongoDB connected");
     app.listen(PORT, () => {

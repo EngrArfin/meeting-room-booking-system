@@ -1,7 +1,7 @@
 import express from "express";
-import Slot from "../models/Slot";
-import Room from "../models/Room";
-import { auth, admin } from "../middleware/authMiddleware";
+import roomModel from "../model/roomModel";
+import { admin, auth } from "../middleware/authMiddleware";
+import slotModel from "../model/slotModel";
 
 const router = express.Router();
 
@@ -9,7 +9,7 @@ router.post("/", auth, admin, async (req, res) => {
   try {
     const { room, date, startTime, endTime } = req.body;
 
-    const existingRoom = await Room.findById(room);
+    const existingRoom = await roomModel.findById(room);
     if (!existingRoom) {
       return res.status(404).json({
         success: false,
@@ -18,7 +18,7 @@ router.post("/", auth, admin, async (req, res) => {
       });
     }
 
-    const slot = new Slot({ room, date, startTime, endTime });
+    const slot = new slotModel({ room, date, startTime, endTime });
     await slot.save();
 
     res.status(200).json({
@@ -27,7 +27,7 @@ router.post("/", auth, admin, async (req, res) => {
       message: "Slot created successfully",
       data: slot,
     });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({
       success: false,
       statusCode: 500,
@@ -40,11 +40,13 @@ router.get("/availability", async (req, res) => {
   try {
     const { room, date } = req.query;
 
-    const availableSlots = await Slot.find({
-      room,
-      date,
-      isBooked: false,
-    }).populate("room");
+    const availableSlots = await slotModel
+      .find({
+        room,
+        date,
+        isBooked: false,
+      })
+      .populate("room");
 
     res.status(200).json({
       success: true,
@@ -52,7 +54,7 @@ router.get("/availability", async (req, res) => {
       message: "Available slots retrieved successfully",
       data: availableSlots,
     });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({
       success: false,
       statusCode: 500,
