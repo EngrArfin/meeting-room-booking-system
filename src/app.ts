@@ -2,10 +2,10 @@ import express, { Application, Request, Response, NextFunction } from "express";
 
 import dotenv from "dotenv";
 import cors from "cors";
-import authRoutes from "./routes/authRoutes";
-import roomRoutes from "./routes/roomRoutes";
-import slotRoutes from "./routes/slotRoutes";
-import bookingRoutes from "./routes/bookingRoutes";
+import authRoutes from "./app/routes/authRoutes";
+import roomRoutes from "./app/routes/roomRoutes";
+import slotRoutes from "./app/routes/slotRoutes";
+import bookingRoutes from "./app/routes/bookingRoutes";
 
 dotenv.config();
 

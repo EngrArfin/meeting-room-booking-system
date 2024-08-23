@@ -6,7 +6,8 @@ import bookingModel from "../model/bookingModel";
 export const createBooking = async (req: Request, res: Response) => {
   try {
     const { roomId, slotIds, date } = req.body;
-    const userId = req.userID;
+    /* const userId = req.userID; */
+    const userId = req.user?._id;
 
     const room = await roomModel.findById(roomId);
     if (!room) {

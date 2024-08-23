@@ -1,12 +1,14 @@
 import mongoose, { Document, Schema } from "mongoose";
 
 export interface IUserModel extends Document {
+  _id: string;
   name: string;
   email: string;
   password: string;
   phone: string;
   address: string;
   role: "user" | "admin";
+  matchPassword(enteredPassword: string): Promise<boolean>;
 }
 
 const UserModelSchema: Schema = new Schema({
