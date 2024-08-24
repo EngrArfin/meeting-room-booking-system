@@ -5,28 +5,21 @@ import app from "./app";
 dotenv.config();
 
 const PORT = process.env.PORT || 5000;
-const MONGODB_URI =
-  process.env.MONGODB_URI || "mongodb://localhost:27017/meeting-room-booking";
+const DATABASE_URL =
+  process.env.DATABASE_URL ||
+  "mongodb://localhost:27017/meeting-room-booking"; /* MONGODB_URI "mongodb://localhost:27017/meeting-room-booking"*/
 
 mongoose
-  .connect(MONGODB_URI)
+  .connect(DATABASE_URL)
   .then(() => {
     console.log("MongoDB connected");
     app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
+      console.log(`Meeting Room booking system server runn on port ${PORT}`);
     });
   })
   .catch((error) => {
-    console.error("MongoDB connection error:", error);
+    console.error(
+      "Meeting Room booking system mongoDB connection error:",
+      error
+    );
   });
-
-//-------------------//
-/* const mongoose = require("mongoose");
-
-async function main() {
-  await mongoose.connect(process.env.DATABASE_URL);
-}
-
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
-}); */

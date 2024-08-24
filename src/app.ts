@@ -21,6 +21,9 @@ app.use("/api/rooms", roomRoutes);
 app.use("/api/slots", slotRoutes);
 app.use("/api/bookings", bookingRoutes);
 
+app.get("/", (req: Request, res: Response) => {
+  res.send("Welcome to my Meeting room booking system project");
+});
 // Error handling middleware
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error(err.stack);
@@ -31,12 +34,3 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 });
 
 export default app;
-
-//-------------------//
-/* const express = require("express");
-const app = express();
-const port = 3000;
-
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-}); */
