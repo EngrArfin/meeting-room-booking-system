@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import express from "express";
 import roomModel from "../model/roomModel";
 import { admin, auth } from "../middleware/authMiddleware";

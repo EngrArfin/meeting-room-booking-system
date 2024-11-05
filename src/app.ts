@@ -22,7 +22,7 @@ app.use("/api/slots", slotRoutes);
 app.use("/api/bookings", bookingRoutes);
 
 app.get("/", (req: Request, res: Response) => {
-  res.send("Welcome to my Meeting room booking system project");
+  res.send("Welcome to Meeting room project");
 });
 // Error handling middleware
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
