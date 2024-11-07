@@ -14,5 +14,10 @@
       "src": "/(.*)",
       "dest": "/src/server.ts"
     }
-  ]
+  ],
+  "env": {
+    "DATABASE_URL": "@database_url",
+    "PORT": "5000"
+  },
+  "regions": ["iad1", "sfo1", "nyc1"]
 }
