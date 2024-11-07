@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from "express";
 import roomModel from "../model/roomModel";
 import slotModel from "../model/slotModel";
