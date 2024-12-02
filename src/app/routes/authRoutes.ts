@@ -7,15 +7,11 @@ import userModel from "../model/userModel";
 
 const router = express.Router();
 
-// User Signup
 router.post("/signup", async (req, res) => {
   try {
     const { name, email, password, phone, address, role } = req.body;
 
-    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create a new user
     const user = new userModel({
       name,
       email,
@@ -27,9 +23,7 @@ router.post("/signup", async (req, res) => {
 
     await user.save();
 
-    // Remove password before sending response
     const { password: _, ...userData } = user.toObject();
-
     res.status(200).json({
       success: true,
       statusCode: 200,
@@ -45,7 +39,6 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-// User Login
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -59,7 +52,6 @@ router.post("/login", async (req, res) => {
       });
     }
 
-    // Check if JWT_SECRET is defined
     const jwtSecret = process.env.JWT_SECRET;
     if (!jwtSecret) {
       return res.status(500).json({
@@ -69,19 +61,31 @@ router.post("/login", async (req, res) => {
       });
     }
 
-    // Generate a JWT token
-    const token = jwt.sign({ id: user._id, role: user.role }, jwtSecret, {
+    const accessToken = jwt.sign({ id: user._id, role: user.role }, jwtSecret, {
       expiresIn: "1h",
     });
 
-    // Remove password from user data before sending response
+    const refreshToken = jwt.sign(
+      { id: user._id, role: user.role },
+      jwtSecret,
+      {
+        expiresIn: "7d",
+      }
+    );
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
     const { password: _, ...userData } = user.toObject();
 
     res.status(200).json({
       success: true,
       statusCode: 200,
       message: "User logged in successfully",
-      token,
+      accessToken,
       data: userData,
     });
   } catch (error: any) {

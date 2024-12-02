@@ -7,7 +7,10 @@ import {
 
 const router = express.Router();
 
-router.post("/", auth, createBooking); // POST to create a booking
-router.get("/", auth, admin, getAllBookings); // GET to retrieve all bookings
+// User routes
+router.post("/", auth, createBooking);
+
+// Admin routes
+router.get("/", auth, admin, getAllBookings);
 
 export default router;

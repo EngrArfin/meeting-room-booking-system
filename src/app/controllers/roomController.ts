@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Request, Response } from "express";
 import roomModel from "../model/roomModel";
 
