@@ -2,14 +2,13 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import userModel, { IUserModel } from "../model/userModel";
 
-// Extend the Request interface to include a `user` property
+// Extend the Request interface to include `user`
 declare module "express-serve-static-core" {
   interface Request {
     user?: IUserModel;
   }
 }
 
-// Authentication middleware
 export const auth = async (req: Request, res: Response, next: NextFunction) => {
   try {
     // Extract token from Authorization header or cookies
@@ -29,7 +28,7 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
       process.env.JWT_SECRET as string
     ) as jwt.JwtPayload;
 
-    // Find the user in the database using the decoded token data (typically user ID)
+    // Fetch user from the database
     const user = await userModel.findById(decoded.id);
 
     if (!user) {
@@ -39,7 +38,7 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
       });
     }
 
-    // Attach the user object to the request for further use
+    // Attach the user object to the request
     req.user = user;
     next();
   } catch (error) {
@@ -51,9 +50,7 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-// Admin middleware
 export const admin = (req: Request, res: Response, next: NextFunction) => {
-  // Check if the user is authenticated and has the role of 'admin'
   if (!req.user || req.user.role !== "admin") {
     return res.status(403).json({
       success: false,

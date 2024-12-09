@@ -3,21 +3,13 @@
   "builds": [
     {
       "src": "src/server.ts",
-      "use": "@vercel/node",
-      "config": {
-        "maxDuration": 10
-      }
+      "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "/src/server.ts"
+      "dest": "src/server.ts"
     }
-  ],
-  "env": {
-    "DATABASE_URL": "@database_url",
-    "PORT": "5000",
-    "JWT_SECRET": "@jwt_secret"
-  }
+  ]
 }

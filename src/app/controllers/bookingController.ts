@@ -6,30 +6,24 @@ import slotModel from "../model/slotModel";
 export const createBooking = async (req: Request, res: Response) => {
   try {
     const { roomId, slotIds, date } = req.body;
-    const userId = req.user?._id;
 
-    // Check if userId is missing
+    // Ensure the user is authenticated
+    const userId = req.user?._id;
     if (!userId) {
       return res
-        .status(400)
-        .json({ success: false, message: "User ID is missing" });
+        .status(401)
+        .json({ success: false, message: "User not authenticated." });
     }
 
     // Validate input fields
-    if (
-      !roomId ||
-      !slotIds ||
-      !Array.isArray(slotIds) ||
-      !slotIds.length ||
-      !date
-    ) {
+    if (!roomId || !Array.isArray(slotIds) || !slotIds.length || !date) {
       return res.status(400).json({
         success: false,
-        message: "Room ID, Slot IDs (array), and Date are required fields.",
+        message: "Room ID, Slot IDs, and Date are required fields.",
       });
     }
 
-    // Validate date format
+    // Validate date
     const parsedDate = new Date(date);
     if (isNaN(parsedDate.getTime())) {
       return res.status(400).json({
@@ -38,35 +32,32 @@ export const createBooking = async (req: Request, res: Response) => {
       });
     }
 
-    if (!userId) {
-      return res.status(401).json({
+    // Check room existence
+    const room = await roomModel.findById(roomId);
+    if (!room) {
+      return res.status(404).json({
         success: false,
-        message: "User not authenticated. Please log in.",
+        message: "Room not found.",
       });
     }
 
-    const room = await roomModel.findById(roomId);
-    if (!room) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Room not found." });
-    }
-
+    // Check slot availability
     const slots = await slotModel.find({
       _id: { $in: slotIds },
       isBooked: false,
     });
-
     if (slots.length !== slotIds.length) {
       return res.status(400).json({
         success: false,
-        message: "Some slots are not available or invalid.",
+        message: "Some slots are already booked or invalid.",
       });
     }
 
+    // Calculate total amount
     const totalAmount = slots.length * room.pricePerSlot;
 
-    const booking = new bookingModel({
+    // Create booking
+    const booking = await bookingModel.create({
       room: roomId,
       slots: slotIds,
       user: userId,
@@ -75,7 +66,7 @@ export const createBooking = async (req: Request, res: Response) => {
       isConfirmed: "unconfirmed",
     });
 
-    await booking.save();
+    // Mark slots as booked
     await slotModel.updateMany({ _id: { $in: slotIds } }, { isBooked: true });
 
     res.status(201).json({
@@ -94,7 +85,6 @@ export const createBooking = async (req: Request, res: Response) => {
 
 export const getAllBookings = async (req: Request, res: Response) => {
   try {
-    // Fetch all bookings with populated room, slots, and user details
     const bookings = await bookingModel
       .find()
       .populate("room")
